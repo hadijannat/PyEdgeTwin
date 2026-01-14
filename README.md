@@ -205,10 +205,10 @@ If you use PyEdgeTwin in your research, please cite:
 
 ```bibtex
 @software{pyedgetwin,
-  author = {Shariati, Aero},
+  author = {Jannatabadi, Hadi},
   title = {PyEdgeTwin: Python Runtime for Hybrid Model Deployment on Edge Devices},
   year = {2024},
-  url = {https://github.com/aeroshariati/PyEdgeTwin}
+  url = {https://github.com/hadijannat/PyEdgeTwin}
 }
 ```
 

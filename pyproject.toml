@@ -10,7 +10,7 @@ readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.10"
 authors = [
-    {name = "Aero Shariati", email = "h.jannatabadi@iat.rwth-aachen.de"}
+    {name = "Hadi Jannatabadi", email = "h.jannatabadi@iat.rwth-aachen.de"}
 ]
 keywords = [
     "edge-computing",
