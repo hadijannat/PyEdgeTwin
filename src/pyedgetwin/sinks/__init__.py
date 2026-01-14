@@ -23,9 +23,9 @@ def create_sink(sink_type: str, config: dict[str, Any]) -> BaseSink:
         ValueError: If the sink type is unknown
     """
     # Lazy imports to avoid circular dependencies
-    from pyedgetwin.sinks.stdout import StdoutSink
     from pyedgetwin.sinks.csv_sink import CSVSink
     from pyedgetwin.sinks.influxdb2 import InfluxDB2Sink
+    from pyedgetwin.sinks.stdout import StdoutSink
 
     builtin: dict[str, type[BaseSink]] = {
         "stdout": StdoutSink,

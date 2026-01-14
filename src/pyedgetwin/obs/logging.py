@@ -128,9 +128,7 @@ class ContextLogger(logging.LoggerAdapter):
         # Outputs: {"twin_id": "motor-twin-001", "asset_id": "motor-001", "message": "Processing message", ...}
     """
 
-    def process(
-        self, msg: str, kwargs: dict[str, Any]
-    ) -> tuple[str, dict[str, Any]]:
+    def process(self, msg: str, kwargs: dict[str, Any]) -> tuple[str, dict[str, Any]]:
         """Add context fields to the log record."""
         # Merge extra with existing context
         extra = kwargs.get("extra", {})
@@ -142,8 +140,8 @@ class ContextLogger(logging.LoggerAdapter):
 def setup_logging(
     level: str = "INFO",
     json_format: bool = False,
-    twin_id: str | None = None,
-    asset_id: str | None = None,
+    _twin_id: str | None = None,
+    _asset_id: str | None = None,
 ) -> logging.Logger:
     """
     Configure application logging.

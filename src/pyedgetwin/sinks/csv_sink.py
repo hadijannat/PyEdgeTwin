@@ -75,7 +75,7 @@ class CSVSink(BaseSink):
 
         # Open file in appropriate mode
         mode = "a" if self._append else "w"
-        self._file = open(self._path, mode, newline="", encoding="utf-8")
+        self._file = open(self._path, mode, newline="", encoding="utf-8")  # noqa: SIM115
 
         self._writer = csv.DictWriter(
             self._file,

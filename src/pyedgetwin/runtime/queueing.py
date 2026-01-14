@@ -43,8 +43,7 @@ class BoundedQueue:
         valid_policies = {"drop_oldest", "drop_newest", "block"}
         if overflow_policy not in valid_policies:
             raise ValueError(
-                f"Invalid overflow_policy: {overflow_policy}. "
-                f"Must be one of {valid_policies}"
+                f"Invalid overflow_policy: {overflow_policy}. Must be one of {valid_policies}"
             )
 
         self._queue: queue.Queue[Any] = queue.Queue(maxsize=maxsize)
@@ -90,10 +89,10 @@ class BoundedQueue:
         if self._policy == "drop_oldest":
             # Remove oldest item and add new one
             try:
-                dropped = self._queue.get_nowait()
+                self._queue.get_nowait()  # Discard oldest item
                 with self._lock:
                     self._dropped_count += 1
-                logger.debug(f"Queue full, dropped oldest item")
+                logger.debug("Queue full, dropped oldest item")
                 self._queue.put_nowait(item)
                 return True
             except queue.Empty:
@@ -118,11 +117,11 @@ class BoundedQueue:
             try:
                 self._queue.put(item, block=True, timeout=timeout)
                 return True
-            except queue.Full:
+            except queue.Full as e:
                 raise QueueOverflowError(
                     "Queue is full and timeout exceeded",
                     details={"timeout": timeout, "size": self._queue.qsize()},
-                )
+                ) from e
 
         return False
 

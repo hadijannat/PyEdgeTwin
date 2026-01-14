@@ -26,8 +26,7 @@ def load_class(module_path: str) -> type[Any]:
     """
     if ":" not in module_path:
         raise ValueError(
-            f"Invalid module_path format: '{module_path}'. "
-            f"Expected 'package.module:ClassName'"
+            f"Invalid module_path format: '{module_path}'. Expected 'package.module:ClassName'"
         )
 
     module_name, class_name = module_path.rsplit(":", 1)
@@ -35,9 +34,7 @@ def load_class(module_path: str) -> type[Any]:
     try:
         module = importlib.import_module(module_name)
     except ImportError as e:
-        raise ImportError(
-            f"Failed to import module '{module_name}': {e}"
-        ) from e
+        raise ImportError(f"Failed to import module '{module_name}': {e}") from e
 
     try:
         cls = getattr(module, class_name)
@@ -48,9 +45,7 @@ def load_class(module_path: str) -> type[Any]:
         ) from e
 
     if not isinstance(cls, type):
-        raise TypeError(
-            f"'{module_path}' refers to {type(cls).__name__}, not a class"
-        )
+        raise TypeError(f"'{module_path}' refers to {type(cls).__name__}, not a class")
 
     return cls
 

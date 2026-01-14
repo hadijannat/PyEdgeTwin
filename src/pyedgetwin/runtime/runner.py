@@ -9,7 +9,7 @@ import threading
 from typing import Any
 
 from pyedgetwin.io.mqtt import MQTTConnector
-from pyedgetwin.io.schemas import EgressMessage, parse_ingress_message
+from pyedgetwin.io.schemas import parse_ingress_message
 from pyedgetwin.models.base import ModelBlock, ModelBlockContext
 from pyedgetwin.models.loader import load_model_block, validate_model_output
 from pyedgetwin.runtime.config import TwinConfig
@@ -144,7 +144,7 @@ class TwinRuntime:
                 logger.info(f"Initialized sink: {sink_type}")
             except Exception as e:
                 logger.error(f"Failed to initialize sink {sink_type}: {e}")
-                raise SinkError(f"Failed to initialize sink: {e}")
+                raise SinkError(f"Failed to initialize sink: {e}") from e
 
     def _start_health_server(self) -> None:
         """Start the health endpoint server."""
@@ -337,8 +337,9 @@ class TwinRuntime:
 
         Sets up signal handlers for graceful shutdown.
         """
+
         # Set up signal handlers
-        def signal_handler(signum: int, frame: Any) -> None:
+        def signal_handler(signum: int, _frame: Any) -> None:
             logger.info(f"Received signal {signum}")
             self.stop()
             sys.exit(0)

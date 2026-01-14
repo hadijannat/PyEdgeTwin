@@ -20,9 +20,7 @@ class IngressMessage(BaseModel):
     timestamp: datetime = Field(description="Measurement timestamp")
     value: float = Field(description="Primary measurement value")
     unit: str | None = Field(default=None, description="Unit of measurement")
-    metadata: dict[str, Any] = Field(
-        default_factory=dict, description="Additional metadata fields"
-    )
+    metadata: dict[str, Any] = Field(default_factory=dict, description="Additional metadata fields")
 
     model_config = {"extra": "allow"}
 
@@ -65,20 +63,12 @@ class EgressMessage(BaseModel):
     anomaly_flag: bool = Field(description="Whether an anomaly was detected")
 
     # Optional model outputs
-    residual: float | None = Field(
-        default=None, description="Difference between raw and estimate"
-    )
-    confidence: float | None = Field(
-        default=None, description="Confidence score (0-1)"
-    )
-    state_vector: list[float] | None = Field(
-        default=None, description="Internal state vector"
-    )
+    residual: float | None = Field(default=None, description="Difference between raw and estimate")
+    confidence: float | None = Field(default=None, description="Confidence score (0-1)")
+    state_vector: list[float] | None = Field(default=None, description="Internal state vector")
 
     # Additional metadata
-    metadata: dict[str, Any] = Field(
-        default_factory=dict, description="Additional output fields"
-    )
+    metadata: dict[str, Any] = Field(default_factory=dict, description="Additional output fields")
 
     model_config = {"extra": "allow"}
 
@@ -106,7 +96,7 @@ def parse_ingress_message(
         return IngressMessage(**raw)
     except Exception as e:
         if strict:
-            raise ValidationError(f"Message validation failed: {e}")
+            raise ValidationError(f"Message validation failed: {e}") from e
         # Create a minimal valid message with defaults
         return IngressMessage(
             asset_id=raw.get("asset_id", "unknown"),

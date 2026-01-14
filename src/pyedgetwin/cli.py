@@ -81,6 +81,7 @@ def run(config: str, log_level: str, log_format: str) -> None:
         logger.error(f"Fatal error: {e}")
         if log_level.upper() == "DEBUG":
             import traceback
+
             traceback.print_exc()
         sys.exit(1)
 
@@ -135,6 +136,7 @@ def info() -> None:
 
     # Python version
     import platform
+
     click.echo(f"Python: {platform.python_version()}")
     click.echo(f"Platform: {platform.platform()}")
     click.echo()
@@ -162,6 +164,7 @@ def info() -> None:
     click.echo("Registered sinks:")
     try:
         from importlib.metadata import entry_points
+
         eps = entry_points(group="pyedgetwin.sinks")
         for ep in eps:
             click.echo(f"  {ep.name}: {ep.value}")
@@ -172,6 +175,7 @@ def info() -> None:
     click.echo("Registered connectors:")
     try:
         from importlib.metadata import entry_points
+
         eps = entry_points(group="pyedgetwin.connectors")
         for ep in eps:
             click.echo(f"  {ep.name}: {ep.value}")
@@ -185,6 +189,7 @@ def _setup_logging(level: str, format_type: str) -> None:
 
     if format_type == "json":
         from pyedgetwin.obs.logging import JSONFormatter
+
         handler = logging.StreamHandler(sys.stdout)
         handler.setFormatter(JSONFormatter())
         handlers.append(handler)

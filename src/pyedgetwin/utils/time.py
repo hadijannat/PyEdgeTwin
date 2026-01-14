@@ -1,7 +1,6 @@
 """Time utilities for PyEdgeTwin."""
 
 from datetime import datetime, timezone
-from typing import Union
 
 
 def utc_now() -> datetime:
@@ -70,7 +69,7 @@ def unix_timestamp(dt: datetime | None = None) -> float:
     return dt.timestamp()
 
 
-def from_unix_timestamp(ts: Union[int, float]) -> datetime:
+def from_unix_timestamp(ts: int | float) -> datetime:
     """
     Convert Unix timestamp to datetime.
 

@@ -1,12 +1,12 @@
 """Runtime engine components for PyEdgeTwin."""
 
 from pyedgetwin.runtime.errors import (
-    PyEdgeTwinError,
     ConfigurationError,
     ConnectionError,
     ModelBlockError,
-    SinkError,
+    PyEdgeTwinError,
     QueueOverflowError,
+    SinkError,
 )
 
 __all__ = [

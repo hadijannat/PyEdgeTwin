@@ -5,8 +5,9 @@ from __future__ import annotations
 import json
 import logging
 import threading
+from collections.abc import Callable
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from typing import Any, Callable
+from typing import Any
 
 from pyedgetwin.obs.metrics import get_metrics
 

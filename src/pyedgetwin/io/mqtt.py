@@ -5,11 +5,11 @@ from __future__ import annotations
 import json
 import logging
 import threading
-import time
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import paho.mqtt.client as mqtt
-from paho.mqtt.enums import CallbackAPIVersion, MQTTErrorCode
+from paho.mqtt.enums import CallbackAPIVersion
 from paho.mqtt.reasoncodes import ReasonCode
 
 from pyedgetwin.io.base import BaseConnector
@@ -56,9 +56,7 @@ class MQTTConnector(BaseConnector):
         Raises:
             ConnectionError: If connection cannot be established
         """
-        logger.info(
-            f"Connecting to MQTT broker at {self._config.host}:{self._config.port}"
-        )
+        logger.info(f"Connecting to MQTT broker at {self._config.host}:{self._config.port}")
 
         # Create client with Paho v2 callback API
         self._client = mqtt.Client(
@@ -105,15 +103,15 @@ class MQTTConnector(BaseConnector):
             raise ConnectionError(
                 f"Failed to connect to MQTT broker: {e}",
                 details={"host": self._config.host, "port": self._config.port},
-            )
+            ) from e
 
     def _on_connect(
         self,
         client: mqtt.Client,
-        userdata: Any,
-        flags: mqtt.ConnectFlags,
+        _userdata: Any,
+        _flags: mqtt.ConnectFlags,
         reason_code: ReasonCode,
-        properties: mqtt.Properties | None,
+        _properties: mqtt.Properties | None,
     ) -> None:
         """
         Paho v2 on_connect callback.
@@ -136,11 +134,11 @@ class MQTTConnector(BaseConnector):
 
     def _on_disconnect(
         self,
-        client: mqtt.Client,
-        userdata: Any,
-        disconnect_flags: mqtt.DisconnectFlags,
+        _client: mqtt.Client,
+        _userdata: Any,
+        _disconnect_flags: mqtt.DisconnectFlags,
         reason_code: ReasonCode,
-        properties: mqtt.Properties | None,
+        _properties: mqtt.Properties | None,
     ) -> None:
         """
         Paho v2 on_disconnect callback with exponential backoff.
@@ -158,9 +156,7 @@ class MQTTConnector(BaseConnector):
         # Exponential backoff for reconnection is handled by Paho's reconnect_delay_set
         # but we log our intention here
         if reason_code.is_failure:
-            logger.info(
-                f"Will retry connection in {self._reconnect_delay:.1f}s"
-            )
+            logger.info(f"Will retry connection in {self._reconnect_delay:.1f}s")
             self._reconnect_delay = min(
                 self._reconnect_delay * 2,
                 self._config.reconnect_delay_max,
@@ -168,8 +164,8 @@ class MQTTConnector(BaseConnector):
 
     def _on_message(
         self,
-        client: mqtt.Client,
-        userdata: Any,
+        _client: mqtt.Client,
+        _userdata: Any,
         msg: mqtt.MQTTMessage,
     ) -> None:
         """
@@ -193,9 +189,7 @@ class MQTTConnector(BaseConnector):
         except Exception as e:
             logger.error(f"Error processing message from {msg.topic}: {e}")
 
-    def _find_callback(
-        self, topic: str
-    ) -> Callable[[dict[str, Any]], None] | None:
+    def _find_callback(self, topic: str) -> Callable[[dict[str, Any]], None] | None:
         """Find the callback for a topic, supporting wildcards."""
         with self._lock:
             # Exact match first

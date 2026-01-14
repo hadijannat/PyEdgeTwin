@@ -114,7 +114,7 @@ class TwinConfig(BaseModel):
     health: HealthConfig = Field(default_factory=HealthConfig)
 
     @model_validator(mode="after")
-    def validate_config(self) -> "TwinConfig":
+    def validate_config(self) -> TwinConfig:
         """Perform cross-field validation."""
         # Ensure at least one topic is configured
         if not self.mqtt.topics:
@@ -142,10 +142,10 @@ def load_config(config_path: str) -> TwinConfig:
     try:
         with open(config_path) as f:
             raw_config = yaml.safe_load(f)
-    except FileNotFoundError:
-        raise ConfigurationError(f"Configuration file not found: {config_path}")
+    except FileNotFoundError as e:
+        raise ConfigurationError(f"Configuration file not found: {config_path}") from e
     except yaml.YAMLError as e:
-        raise ConfigurationError(f"Invalid YAML in configuration file: {e}")
+        raise ConfigurationError(f"Invalid YAML in configuration file: {e}") from e
 
     # Recursively expand environment variables in all string values
     raw_config = _expand_env_vars_recursive(raw_config)
@@ -156,7 +156,7 @@ def load_config(config_path: str) -> TwinConfig:
     try:
         return TwinConfig(**raw_config)
     except Exception as e:
-        raise ConfigurationError(f"Configuration validation failed: {e}")
+        raise ConfigurationError(f"Configuration validation failed: {e}") from e
 
 
 def _expand_env_vars_recursive(obj: Any) -> Any:
@@ -199,14 +199,14 @@ def _apply_env_overrides(config: dict[str, Any]) -> dict[str, Any]:
 
 def _set_nested(d: dict[str, Any], path: tuple[str, ...], value: Any) -> None:
     """Set a nested dictionary value."""
+    import contextlib
+
     for key in path[:-1]:
         d = d.setdefault(key, {})
     # Try to convert to int for port-like values
     if path[-1] == "port":
-        try:
+        with contextlib.suppress(ValueError, TypeError):
             value = int(value)
-        except (ValueError, TypeError):
-            pass
     d[path[-1]] = value
 
 

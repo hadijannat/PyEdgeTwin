@@ -7,10 +7,10 @@ from datetime import datetime
 from typing import Any
 
 from influxdb_client import InfluxDBClient, WriteOptions
-from influxdb_client.client.write_api import SYNCHRONOUS, WriteApi
+from influxdb_client.client.write_api import WriteApi
 
-from pyedgetwin.sinks.base import BaseSink
 from pyedgetwin.runtime.errors import SinkError
+from pyedgetwin.sinks.base import BaseSink
 
 logger = logging.getLogger(__name__)
 
@@ -91,7 +91,7 @@ class InfluxDB2Sink(BaseSink):
                 batch_size=self._batch_size,
                 flush_interval=self._flush_interval_ms,
                 jitter_interval=2_000,  # Random jitter to spread writes
-                retry_interval=5_000,   # Initial retry delay
+                retry_interval=5_000,  # Initial retry delay
                 max_retries=5,
                 max_retry_delay=30_000,
                 exponential_base=2,
@@ -115,7 +115,7 @@ class InfluxDB2Sink(BaseSink):
             raise SinkError(
                 f"Failed to connect to InfluxDB: {e}",
                 details={"url": self._url, "org": self._org},
-            )
+            ) from e
 
     def write(self, record: dict[str, Any]) -> None:
         """
@@ -181,12 +181,16 @@ class InfluxDB2Sink(BaseSink):
             fields["confidence"] = float(record["confidence"])
 
         # Add any additional numeric fields from metadata
+        excluded_keys = {"timestamp", "processed_at", "asset_id", "twin_id", "model_version"}
         for key, value in record.items():
-            if key not in fields and key not in tags and key not in {
-                "timestamp", "processed_at", "asset_id", "twin_id", "model_version"
-            }:
-                if isinstance(value, (int, float)) and not isinstance(value, bool):
-                    fields[key] = float(value)
+            if (
+                key not in fields
+                and key not in tags
+                and key not in excluded_keys
+                and isinstance(value, (int, float))
+                and not isinstance(value, bool)
+            ):
+                fields[key] = float(value)
 
         return {
             "measurement": self._measurement,
@@ -234,16 +238,16 @@ class InfluxDB2Sink(BaseSink):
             f"InfluxDB sink closed (records={self._record_count}, errors={self._error_count})"
         )
 
-    def _on_success(self, conf: tuple[str, str, str], data: str) -> None:
+    def _on_success(self, _conf: tuple[str, str, str], _data: str) -> None:
         """Callback for successful batch writes."""
-        logger.debug(f"Successfully wrote batch to InfluxDB")
+        logger.debug("Successfully wrote batch to InfluxDB")
 
-    def _on_error(self, conf: tuple[str, str, str], data: str, exception: Exception) -> None:
+    def _on_error(self, _conf: tuple[str, str, str], _data: str, exception: Exception) -> None:
         """Callback for failed batch writes."""
         self._error_count += 1
         logger.error(f"Failed to write batch to InfluxDB: {exception}")
 
-    def _on_retry(self, conf: tuple[str, str, str], data: str, exception: Exception) -> None:
+    def _on_retry(self, _conf: tuple[str, str, str], _data: str, exception: Exception) -> None:
         """Callback for retried batch writes."""
         logger.warning(f"Retrying batch write to InfluxDB: {exception}")
 

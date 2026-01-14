@@ -68,12 +68,12 @@ def load_model_block(
         raise ModelBlockError(
             f"Failed to import model block: {e}",
             details={"module_path": config.module_path},
-        )
+        ) from e
     except Exception as e:
         raise ModelBlockError(
             f"Failed to initialize model block: {e}",
             details={"module_path": config.module_path, "error_type": type(e).__name__},
-        )
+        ) from e
 
 
 def create_context(
