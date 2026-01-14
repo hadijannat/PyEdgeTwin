@@ -1,0 +1,51 @@
+# PyEdgeTwin Motor Filtering Demo Configuration
+#
+# This configuration sets up a digital twin for a motor temperature sensor
+# using a Kalman filter for noise reduction and anomaly detection.
+
+runtime:
+  twin_id: "motor-kalman-twin"
+  asset_id: "motor-001"
+  workers: 1  # Single worker for deterministic ordering
+  queue_size: 1000
+  queue_overflow_policy: "drop_oldest"
+
+mqtt:
+  # Host and port can be overridden via environment variables
+  host: ${PYEDGETWIN_MQTT_HOST:-localhost}
+  port: 1883
+  qos: 1
+  topics:
+    - "sensors/motor-001/+"  # Subscribe to all sensor types for this motor
+  client_id: "pyedgetwin-motor-twin"
+  reconnect_delay_min: 1.0
+  reconnect_delay_max: 60.0
+
+model:
+  # Model block implementing a 1D Kalman filter
+  module_path: "kalman_filter:KalmanFilterModel"
+  version: "1.0.0"
+  params:
+    # Kalman filter parameters
+    process_noise: 0.01        # Q: How much we expect the true value to change
+    measurement_noise: 0.5     # R: How noisy our sensor measurements are
+    initial_estimate: 45.0     # Initial state estimate (typical motor temp in C)
+
+    # Anomaly detection threshold
+    # Flag anomaly if normalized innovation > threshold
+    anomaly_threshold: 3.0
+
+sinks:
+  influxdb2:
+    url: ${PYEDGETWIN_INFLUXDB_URL:-http://localhost:8086}
+    token: ${PYEDGETWIN_INFLUXDB_TOKEN}
+    org: ${PYEDGETWIN_INFLUXDB_ORG:-pyedgetwin}
+    bucket: ${PYEDGETWIN_INFLUXDB_BUCKET:-twins}
+    batch_size: 100
+    flush_interval_ms: 5000
+    measurement: "motor_twin"
+
+health:
+  enabled: true
+  host: "0.0.0.0"
+  port: 8080

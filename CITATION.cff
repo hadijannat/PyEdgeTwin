@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "PyEdgeTwin"
+version: "0.1.0"
+date-released: 2024-01-01
+url: "https://github.com/aeroshariati/PyEdgeTwin"
+repository-code: "https://github.com/aeroshariati/PyEdgeTwin"
+license: Apache-2.0
+authors:
+  - family-names: "Shariati"
+    given-names: "Aero"
+    email: "h.jannatabadi@iat.rwth-aachen.de"
+    affiliation: "RWTH Aachen University"
+keywords:
+  - digital-twin
+  - edge-computing
+  - iot
+  - mqtt
+  - machine-learning
+  - hybrid-model
+  - industrial-iot
+  - python
+abstract: >-
+  PyEdgeTwin is a Python-first, container-native runtime framework
+  for deploying hybrid (physics + data-driven) models on streaming
+  industrial telemetry at the edge. It provides a standardized
+  substrate for hybrid model execution with MQTT connectivity,
+  pluggable persistence sinks, and production-ready observability.
