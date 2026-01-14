@@ -109,16 +109,18 @@ class TestBoundedQueue:
         q = BoundedQueue(maxsize=100, overflow_policy="drop_oldest")
         num_items = 500
         results: list[int] = []
+        stop_event = threading.Event()
 
         def producer() -> None:
             for i in range(num_items):
                 q.put(i)
 
         def consumer() -> None:
-            while len(results) < num_items:
+            while not stop_event.is_set():
                 try:
                     item = q.get(timeout=0.1)
                     results.append(item)
+                    q.task_done()
                 except Exception:
                     pass
 
@@ -129,8 +131,13 @@ class TestBoundedQueue:
         consumer_thread.start()
 
         producer_thread.join()
-        # Give consumer time to drain
-        time.sleep(0.5)
+        # Give consumer time to drain remaining items, then stop.
+        deadline = time.time() + 2.0
+        while time.time() < deadline and not q.empty():
+            time.sleep(0.05)
+        stop_event.set()
+        consumer_thread.join(timeout=1.0)
+        assert not consumer_thread.is_alive()
 
         # Should have received most items (some may be dropped)
         assert q.total_put == num_items
