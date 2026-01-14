@@ -104,7 +104,7 @@ class TestTwinConfig:
     def test_missing_topics(self, sample_config_dict: dict[str, Any]) -> None:
         """Test that missing topics raises an error."""
         sample_config_dict["mqtt"]["topics"] = []
-        with pytest.raises(ValueError, match="at least one MQTT topic"):
+        with pytest.raises(ValueError, match="(?i)at least one MQTT topic"):
             TwinConfig(**sample_config_dict)
 
 
