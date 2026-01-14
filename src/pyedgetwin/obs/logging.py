@@ -112,7 +112,7 @@ class JSONFormatter(logging.Formatter):
         return value
 
 
-class ContextLogger(logging.LoggerAdapter):
+class ContextLogger(logging.LoggerAdapter[logging.Logger]):
     """
     Logger adapter that automatically includes context fields.
 
@@ -128,7 +128,9 @@ class ContextLogger(logging.LoggerAdapter):
         # Outputs: {"twin_id": "motor-twin-001", "asset_id": "motor-001", "message": "Processing message", ...}
     """
 
-    def process(self, msg: str, kwargs: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    def process(  # type: ignore[override]
+        self, msg: str, kwargs: dict[str, Any]
+    ) -> tuple[str, dict[str, Any]]:
         """Add context fields to the log record."""
         # Merge extra with existing context
         extra = kwargs.get("extra", {})

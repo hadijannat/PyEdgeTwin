@@ -111,7 +111,7 @@ class MQTTConnector(BaseConnector):
         _userdata: Any,
         _flags: mqtt.ConnectFlags,
         reason_code: ReasonCode,
-        _properties: mqtt.Properties | None,
+        _properties: Any | None,
     ) -> None:
         """
         Paho v2 on_connect callback.
@@ -122,7 +122,7 @@ class MQTTConnector(BaseConnector):
             logger.error(f"MQTT connection failed: {reason_code}")
             return
 
-        logger.info(f"Connected to MQTT broker: {reason_code.getName()}")
+        logger.info(f"Connected to MQTT broker: {reason_code.getName()}")  # type: ignore[no-untyped-call]
         self._connected.set()
         self._reconnect_delay = self._config.reconnect_delay_min
 
@@ -138,7 +138,7 @@ class MQTTConnector(BaseConnector):
         _userdata: Any,
         _disconnect_flags: mqtt.DisconnectFlags,
         reason_code: ReasonCode,
-        _properties: mqtt.Properties | None,
+        _properties: Any | None,
     ) -> None:
         """
         Paho v2 on_disconnect callback with exponential backoff.
@@ -151,7 +151,7 @@ class MQTTConnector(BaseConnector):
             logger.info("MQTT disconnected (shutdown)")
             return
 
-        logger.warning(f"MQTT disconnected: {reason_code.getName()}")
+        logger.warning(f"MQTT disconnected: {reason_code.getName()}")  # type: ignore[no-untyped-call]
 
         # Exponential backoff for reconnection is handled by Paho's reconnect_delay_set
         # but we log our intention here

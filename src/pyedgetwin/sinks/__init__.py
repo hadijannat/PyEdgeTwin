@@ -40,7 +40,7 @@ def create_sink(sink_type: str, config: dict[str, Any]) -> BaseSink:
     eps = entry_points(group="pyedgetwin.sinks")
     for ep in eps:
         if ep.name == sink_type:
-            cls = ep.load()
+            cls: type[BaseSink] = ep.load()
             return cls(**config)
 
     raise ValueError(f"Unknown sink type: {sink_type}")

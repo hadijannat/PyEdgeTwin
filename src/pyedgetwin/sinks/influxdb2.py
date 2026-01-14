@@ -6,7 +6,7 @@ import logging
 from datetime import datetime
 from typing import Any
 
-from influxdb_client import InfluxDBClient, WriteOptions
+from influxdb_client import InfluxDBClient, WriteOptions  # type: ignore[attr-defined]
 from influxdb_client.client.write_api import WriteApi
 
 from pyedgetwin.runtime.errors import SinkError
@@ -222,14 +222,14 @@ class InfluxDB2Sink(BaseSink):
         if self._write_api:
             try:
                 # close() flushes remaining batched data
-                self._write_api.close()
+                self._write_api.close()  # type: ignore[no-untyped-call]
                 logger.debug("WriteApi closed and flushed")
             except Exception as e:
                 logger.error(f"Error closing WriteApi: {e}")
 
         if self._client:
             try:
-                self._client.close()
+                self._client.close()  # type: ignore[no-untyped-call]
                 logger.debug("InfluxDB client closed")
             except Exception as e:
                 logger.error(f"Error closing client: {e}")

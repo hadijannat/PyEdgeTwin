@@ -131,14 +131,14 @@ class TwinRuntime:
         if not self._config.sinks:
             # Default to stdout sink
             logger.info("No sinks configured, using stdout")
-            sink = StdoutSink()
-            sink.open()
-            self._sinks.append(sink)
+            default_sink: BaseSink = StdoutSink()
+            default_sink.open()
+            self._sinks.append(default_sink)
             return
 
         for sink_type, sink_config in self._config.sinks.items():
             try:
-                sink = create_sink(sink_type, sink_config)
+                sink: BaseSink = create_sink(sink_type, sink_config)
                 sink.open()
                 self._sinks.append(sink)
                 logger.info(f"Initialized sink: {sink_type}")
@@ -191,6 +191,10 @@ class TwinRuntime:
         # Add ingestion timestamp
         payload["_ingested_at"] = utc_now().isoformat()
 
+        if self._queue is None:
+            logger.error("Queue not initialized")
+            return
+
         if not self._queue.put(payload, timeout=1.0):
             logger.warning("Failed to enqueue message (queue overflow)")
 
@@ -204,6 +208,9 @@ class TwinRuntime:
         logger.debug(f"{thread_name}: Starting worker loop")
 
         while self._running.is_set():
+            if self._queue is None:
+                break
+
             try:
                 # Get message with timeout so we can check running flag
                 try:
