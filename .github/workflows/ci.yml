@@ -73,14 +73,15 @@ jobs:
       - name: Run unit tests
         run: pytest tests/unit -v --cov=pyedgetwin --cov-report=xml --cov-report=term
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        timeout-minutes: 1
-        with:
-          files: ./coverage.xml
-          fail_ci_if_error: false
-          verbose: false
-        continue-on-error: true
+      # NOTE: Codecov upload disabled - was blocking CI. Re-enable with CODECOV_TOKEN if needed.
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v3
+      #   timeout-minutes: 1
+      #   with:
+      #     files: ./coverage.xml
+      #     fail_ci_if_error: false
+      #     verbose: false
+      #   continue-on-error: true
 
   # ===========================================================================
   # Integration Tests
